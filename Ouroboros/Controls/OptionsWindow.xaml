@@ -1,0 +1,85 @@
+﻿<Window x:Class="Ouroboros.Controls.OptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        FontFamily="{materialDesign:MaterialDesignFont}"
+        mc:Ignorable="d"
+        Title="Ouroboros Options" Height="300" Width="550"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        WindowStyle="None" ResizeMode="CanResize" WindowStartupLocation="CenterScreen">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <materialDesign:ColorZone Mode="PrimaryMid" Padding="5" Grid.Row="0">
+            <DockPanel LastChildFill="False">
+                <Button DockPanel.Dock="Right" Click="CloseButton_Click" Style="{StaticResource MaterialDesignPaperDarkButton}">
+                    <materialDesign:PackIcon Kind="Close" />
+                </Button>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <TextBlock Text="Options" VerticalAlignment="Center" Margin="17,0,0,0" HorizontalAlignment="Left" FontSize="16" />
+
+
+        <!-- Main content -->
+        <TabControl Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}">
+            <!-- General Tab -->
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Dark Ages Path -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Dark Ages Path" 
+                               Foreground="{DynamicResource MaterialDesignBody}"
+                               VerticalAlignment="Center" Margin="5"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Style="{DynamicResource MaterialDesignTextBox}"
+                             Foreground="{DynamicResource MaterialDesignBody}"
+                             Text="{Binding GeneralOptions.DarkAgesPath, UpdateSourceTrigger=PropertyChanged}" 
+                             VerticalAlignment="Center" Margin="5"/>
+                    <Button Grid.Row="0" Grid.Column="2" Content="Browse" 
+                            Style="{DynamicResource MaterialDesignPaperDarkButton}"
+                            VerticalAlignment="Center" Margin="5" Click="BrowseButton_Click"/>
+                </Grid>
+            </TabItem>
+            
+            <!-- Hotkey Tab -->
+            <TabItem Header="Hotkeys">
+                <Grid>
+                    <!-- Add your Hotkey settings here -->
+                </Grid>
+            </TabItem>
+            
+            <!-- Theme Tab -->
+            <TabItem Header="Theme">
+                <Grid>
+                    <!-- Add your theme-related settings here -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,20">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="Dark" Margin="5,0"/>
+                        <CheckBox Name="ThemeToggle" Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" Checked="ThemeToggle_OnChecked" Unchecked="ThemeToggle_OnUnchecked" IsChecked="{Binding GeneralOptions.DarkTheme}" />
+                        <TextBlock VerticalAlignment="Center" Text="Light" Margin="5,0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            
+            <!-- Add more tabs for other settings categories as needed -->
+        </TabControl>
+
+    </Grid>
+</Window>

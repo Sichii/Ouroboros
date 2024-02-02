@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Windows;
 using Chaos.Extensions.Common;
 using Chaos.Extensions.DependencyInjection;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,8 +26,9 @@ namespace Ouroboros;
 public sealed partial class App
 {
     private readonly IConfiguration Configuration;
-    private readonly CancellationTokenSource CancellationTokenSource;
-    private readonly IServiceProvider Provider;
+    private readonly CancellationTokenSource CancellationTokenSource; 
+    public IServiceProvider Provider { get; }
+    public static App Instance => (App)Current;
     
     public App()
     {
@@ -87,7 +89,7 @@ public sealed partial class App
         
         services.AddTransient<ClientFactory>();
         services.AddTransient<DaWindowFactory>();
-        
+        services.AddTransient<OptionsWindow>();
         
         
         services.AddSimpleFactory<ProxyClient>(typeof(Socket));

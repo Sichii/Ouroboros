@@ -2,6 +2,9 @@
   <ItemGroup>
     <PackageVersion Include="Chaos.Networking" Version="1.3.13-preview-gde1ed9da11" />
     <PackageVersion Include="Chaos.Pathfinding" Version="1.3.13-preview-gde1ed9da11" />
+    <PackageVersion Include="Material.Icons" Version="2.1.6" />
+    <PackageVersion Include="MaterialDesignExtensions" Version="3.3.0" />
+    <PackageVersion Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0-3.final" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="5.3.8" />
   </ItemGroup>
