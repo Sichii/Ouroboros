@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <Prefer32bit>false</Prefer32bit>
+      <PlatformTarget>AnyCPU</PlatformTarget>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Chaos.Networking" />
+      <PackageReference Include="Chaos.Pathfinding" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+      <PackageReference Include="NLog.Extensions.Logging" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Controls\MainWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="app.manifest" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="dotnet build &quot;$(SolutionDir)Injector32\Injector32.csproj&quot; --configuration Release --output &quot;$(TargetDir)&quot;&#xA;" />
+    </Target>
+
+</Project>
