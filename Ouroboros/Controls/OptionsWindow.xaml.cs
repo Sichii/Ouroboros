@@ -1,58 +1,76 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using System.ComponentModel;
 using System.Windows;
-using Ouroboros.Services.Options;
+using Chaos.Extensions.Common;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
+using Ouroboros.Abstractions;
+using Ouroboros.Defintions;
+using Ouroboros.ViewModel;
 
-namespace Ouroboros.Controls
+namespace Ouroboros.Controls;
+
+/// <summary>
+///     Interaction logic for OptionsWindow.xaml
+/// </summary>
+public sealed partial class OptionsWindow
 {
-    /// <summary>
-    /// Interaction logic for OptionsWindow.xaml
-    /// </summary>
-    public sealed partial class OptionsWindow
+    public IStorage<GeneralOptions> GeneralOptions { get; }
+
+    public OptionsWindow(IStorage<GeneralOptions> generalOptions)
     {
-        public GeneralOptions GeneralOptions { get; }
-
-        public OptionsWindow(GeneralOptions generalOptions)
-        {
-            GeneralOptions = generalOptions;
-            InitializeComponent();
-        }
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
-
-        private void ThemeToggle_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var paletteHelper = new PaletteHelper();
-            var theme = paletteHelper.GetTheme();
-
-            theme.SetBaseTheme(Theme.Light);
-
-            paletteHelper.SetTheme(theme);
-        }
-
-        private void ThemeToggle_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var paletteHelper = new PaletteHelper();
-            var theme = paletteHelper.GetTheme();
-
-            theme.SetBaseTheme(Theme.Dark);
-
-            paletteHelper.SetTheme(theme);
-        }
+        GeneralOptions = generalOptions;
+        DataContext = GeneralOptions.Value;
         
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
+        InitializeComponent();
+    }
+
+    private void BrowseButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new OpenFileDialog
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog
-            {
-                DefaultExt = ".exe",
-                Filter = "Executables (*.exe)|*.exe"
-            };
-            
-            var result = dlg.ShowDialog();
-            
-            if (result == true)
-            {
-                var filename = dlg.FileName;
-                GeneralOptions.DarkAgesPath = filename;
-            }
+            DefaultExt = ".exe",
+            Filter = "Executables (*.exe)|*.exe"
+        };
+
+        var success = dlg.ShowDialog();
+
+        if (success == true)
+        {
+            var path = dlg.FileName;
+            GeneralOptions.Value.DarkAgesPath = path;
         }
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    private async void OptionsWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        try
+        {
+            await GeneralOptions.SaveAsync()
+                                .ConfigureAwait(false);
+        } catch
+        {
+            //ignored
+        }
+    }
+
+    private void SetBaseTheme(IBaseTheme baseTheme)
+    {
+        var paletteHelper = new PaletteHelper();
+        var theme = paletteHelper.GetTheme();
+
+        theme.SetBaseTheme(baseTheme);
+
+        paletteHelper.SetTheme(theme);
+    }
+
+    private void ThemeToggle_OnChecked(object sender, RoutedEventArgs e) => SetBaseTheme(Theme.Dark);
+
+    private void ThemeToggle_OnUnchecked(object sender, RoutedEventArgs e) => SetBaseTheme(Theme.Light);
+
+    private void OptionsWindow_OnInitialized(object? sender, EventArgs e)
+    {
+        WindowSizeCmbox.ItemsSource = EnumExtensions.GetEnumNames<WindowSize>();
     }
 }

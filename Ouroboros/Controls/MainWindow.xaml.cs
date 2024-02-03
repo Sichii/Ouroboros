@@ -7,32 +7,20 @@ using Ouroboros.Services.Managers;
 namespace Ouroboros.Controls;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+///     Interaction logic for MainWindow.xaml
 /// </summary>
 public sealed partial class MainWindow
 {
-    private readonly DaWindowFactory DaWindowFactory;
     private readonly ClientManager ClientManager;
+    private readonly DaWindowFactory DaWindowFactory;
 
     public MainWindow(DaWindowFactory daWindowFactory, ClientManager clientManager)
     {
         DaWindowFactory = daWindowFactory;
         ClientManager = clientManager;
-        
+
         InitializeComponent();
     }
-
-    #region TopBar UI
-    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
-
-    private void MinimizeButton_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-
-    private void HamburgerButton_Click(object sender, RoutedEventArgs e)
-    {
-        DrawerHost.IsLeftDrawerOpen = !DrawerHost.IsLeftDrawerOpen;
-    }
-
-    #endregion TopBar UI
 
     private async void LaunchBtn_Click(object sender, RoutedEventArgs e)
     {
@@ -49,4 +37,12 @@ public sealed partial class MainWindow
         options.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         options.Show();
     }
+
+    #region TopBar UI
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void HamburgerButton_Click(object sender, RoutedEventArgs e) => DrawerHost.IsLeftDrawerOpen = !DrawerHost.IsLeftDrawerOpen;
+    #endregion TopBar UI
 }

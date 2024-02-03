@@ -1,14 +1,14 @@
 ﻿using Ouroboros.Defintions;
 using Ouroboros.ViewModel.Abstractions;
 
-namespace Ouroboros.Services.Options;
+namespace Ouroboros.ViewModel;
 
 public sealed class GeneralOptions : NotifyPropertyChangedBase
 {
     private string _darkAgesPath = CONSTANTS.DEFAULT_DARKAGES_DIRECTORY;
     private WindowSize _windowSize = WindowSize.Small;
     private bool _injectDawnd;
-    private bool _darkTheme;
+    private bool _darkTheme = true;
 
     public string DarkAgesPath
     {

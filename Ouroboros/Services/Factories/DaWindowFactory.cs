@@ -1,14 +1,15 @@
 ﻿using System.IO;
+using Ouroboros.Abstractions;
 using Ouroboros.Defintions;
 using Ouroboros.Memory;
-using Ouroboros.Services.Options;
+using Ouroboros.ViewModel;
 
 namespace Ouroboros.Services.Factories;
 
 public sealed class DaWindowFactory
 {
     private readonly GeneralOptions GeneralOptions;
-    public DaWindowFactory(GeneralOptions generalOptions) => GeneralOptions = generalOptions;
+    public DaWindowFactory(IReadOnlyStorage<GeneralOptions> generalOptions) => GeneralOptions = generalOptions.Value;
     
     public async Task<DaWindow> CreateAsync(MemoryEditFlags memoryEditFlags)
     {
@@ -23,7 +24,7 @@ public sealed class DaWindowFactory
         
         await window.WaitForHandleAsync();
         
-        window.Resize(WindowSize.Small);
+        window.Resize(GeneralOptions.WindowSize);
         
         return window;
     }

@@ -8,14 +8,20 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         FontFamily="{materialDesign:MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Ouroboros" Height="550" Width="900"
-        WindowStyle="None" ResizeMode="CanResize" WindowStartupLocation="CenterScreen">
-    
+        Title="Ouroboros"
+        Height="550"
+        Width="900"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen">
+
     <materialDesign:DrawerHost x:Name="DrawerHost">
         <materialDesign:DrawerHost.LeftDrawerContent>
             <StackPanel Background="{DynamicResource MaterialDesignPaper}">
-                <Button Content="Launch Client" Click="LaunchBtn_Click" />
-                <Button Content="Options" Click="OptionsButton_Click"/>
+                <Button Content="Launch Client"
+                        Click="LaunchBtn_Click" />
+                <Button Content="Options"
+                        Click="OptionsButton_Click" />
                 <!-- Add more menu items here -->
             </StackPanel>
         </materialDesign:DrawerHost.LeftDrawerContent>
@@ -27,26 +33,38 @@
             </Grid.RowDefinitions>
 
             <!-- Title bar -->
-            <materialDesign:ColorZone Mode="PrimaryMid" Padding="5" Grid.Row="0">
+            <materialDesign:ColorZone Mode="PrimaryMid"
+                                      Padding="5"
+                                      Grid.Row="0">
                 <DockPanel LastChildFill="False">
-                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
-                                  Click="HamburgerButton_Click" 
+                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                  Click="HamburgerButton_Click"
                                   Margin="5,0,0,0" />
 
-                    <Button DockPanel.Dock="Right" Click="CloseButton_Click" Style="{StaticResource MaterialDesignPaperButton}">
+                    <Button DockPanel.Dock="Right"
+                            Click="CloseButton_Click"
+                            Style="{StaticResource MaterialDesignPaperButton}">
                         <materialDesign:PackIcon Kind="Close" />
                     </Button>
-                    <Button DockPanel.Dock="Right" Click="MinimizeButton_Click" Style="{StaticResource MaterialDesignPaperButton}" Margin="0,0,10,0" >
+                    <Button DockPanel.Dock="Right"
+                            Click="MinimizeButton_Click"
+                            Style="{StaticResource MaterialDesignPaperButton}"
+                            Margin="0,0,10,0">
                         <materialDesign:PackIcon Kind="Minimize" />
                     </Button>
                 </DockPanel>
             </materialDesign:ColorZone>
-            <TextBlock Text="Ouroboros" VerticalAlignment="Center" Margin="50,0,0,0" HorizontalAlignment="Left" FontSize="16" Grid.Row="0" />
+            <TextBlock Text="Ouroboros"
+                       VerticalAlignment="Center"
+                       Margin="50,0,0,0"
+                       HorizontalAlignment="Left"
+                       FontSize="16"
+                       Grid.Row="0" />
 
             <!-- Main content -->
-            <ContentControl x:Name="MainContentControl" Grid.Row="1" />
+            <ContentControl x:Name="MainContentControl"
+                            Grid.Row="1" />
 
         </Grid>
     </materialDesign:DrawerHost>
 </Window>
-

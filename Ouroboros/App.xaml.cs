@@ -16,7 +16,7 @@ using Ouroboros.Extensions;
 using Ouroboros.Networking;
 using Ouroboros.Services.Factories;
 using Ouroboros.Services.Managers;
-using Ouroboros.Services.Options;
+using Ouroboros.ViewModel;
 
 namespace Ouroboros;
 

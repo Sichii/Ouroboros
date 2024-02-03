@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Ouroboros.Abstractions;
 using Ouroboros.Services.Managers;
 
 namespace Ouroboros.Extensions;
@@ -25,12 +26,6 @@ public static class ServiceCollectionExtensions
         ILocalStorageConfigurer WithSingleton<T>() where T: class, new();
         
         ILocalStorageConfigurer WithTransient<T>() where T: class, new();
-
-        ILocalStorageConfigurer WithTransient<TInterface, TImpl>() where TInterface: class
-                                                                     where TImpl: class, TInterface, new();
-
-        ILocalStorageConfigurer WithSingleton<TInterface, TImpl>() where TInterface: class
-                                                                     where TImpl: class, TInterface, new();
     }
 
     private sealed class LocalStorageConfigurer : ILocalStorageConfigurer
@@ -44,31 +39,11 @@ public static class ServiceCollectionExtensions
         /// <inheritdoc />
         public ILocalStorageConfigurer WithSingleton<T>() where T: class, new()
         {
-            Services.AddSingleton<T>(
+            Services.AddSingleton<IStorage<T>>(
                 provider => provider.GetRequiredService<LocalStorageManager>()
                                     .Load<T>());
 
-            return this;
-        }
-        
-        public ILocalStorageConfigurer WithTransient<TInterface, TImpl>()
-            where TInterface: class
-            where TImpl: class, TInterface, new()
-        {
-            Services.AddTransient<TInterface, TImpl>(
-                provider => provider.GetRequiredService<LocalStorageManager>()
-                                    .Load<TImpl>());
-
-            return this;
-        }
-
-        /// <inheritdoc />
-        public ILocalStorageConfigurer WithSingleton<TInterface, TImpl>() where TInterface: class
-                                                                            where TImpl: class, TInterface, new()
-        {
-            Services.AddSingleton<TInterface, TImpl>(
-                provider => provider.GetRequiredService<LocalStorageManager>()
-                                    .Load<TImpl>());
+            Services.AddSingleton<IReadOnlyStorage<T>>(provider => provider.GetRequiredService<IStorage<T>>());
 
             return this;
         }
@@ -76,7 +51,11 @@ public static class ServiceCollectionExtensions
         /// <inheritdoc />
         public ILocalStorageConfigurer WithTransient<T>() where T: class, new()
         {
-            Services.AddTransient<T>(
+            Services.AddTransient<IStorage<T>>(
+                provider => provider.GetRequiredService<LocalStorageManager>()
+                                    .Load<T>());
+
+            Services.AddTransient<IReadOnlyStorage<T>>(
                 provider => provider.GetRequiredService<LocalStorageManager>()
                                     .Load<T>());
 
