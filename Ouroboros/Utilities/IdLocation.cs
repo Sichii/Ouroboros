@@ -1,8 +1,9 @@
 ﻿using Chaos.Geometry.Abstractions;
+using Ouroboros.Abstractions;
 
 namespace Ouroboros.Utilities;
 
-public sealed class IdLocation : ILocation
+public sealed class IdLocation : IIdLocation
 {
     /// <inheritdoc />
     public int X { get; init; }
@@ -13,9 +14,9 @@ public sealed class IdLocation : ILocation
     /// <inheritdoc />
     string ILocation.Map => MapId.ToString();
     
-    public int MapId { get; init; }
+    public ushort MapId { get; init; }
     
-    public IdLocation(int mapId, int x, int y)
+    public IdLocation(ushort mapId, int x, int y)
     {
         MapId = mapId;
         X = x;

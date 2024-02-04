@@ -1,5 +1,6 @@
 <Project>
   <ItemGroup>
+    <PackageVersion Include="Chaos.Extensions.Geometry" Version="1.3.14-preview-gb7c4b7f158" />
     <PackageVersion Include="Chaos.Networking" Version="1.3.14-preview-gb7c4b7f158" />
     <PackageVersion Include="Chaos.Pathfinding" Version="1.3.14-preview-gb7c4b7f158" />
     <PackageVersion Include="Chaos.Wpf" Version="1.3.14-preview-gb7c4b7f158" />

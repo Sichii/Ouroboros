@@ -1,16 +1,20 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
 using Chaos.Cryptography.Abstractions;
+using Chaos.Geometry;
+using Chaos.Geometry.Abstractions;
+using Chaos.Geometry.Abstractions.Definitions;
 using Chaos.Networking.Entities.Server;
 using Chaos.Packets;
 using Chaos.Packets.Abstractions;
 using Ouroboros.Memory;
+using Ouroboros.Model;
 using Ouroboros.Services.Managers;
 using Ouroboros.Utilities;
 
 namespace Ouroboros.Networking;
 
-public sealed class Client
+public sealed class Client : IEquatable<Client>
 {
     public string Guid { get; } = System.Guid.NewGuid().ToString();
     public DaWindow? DaWindow { get; set; }
@@ -32,6 +36,11 @@ public sealed class Client
     private Task? ProcessLoopTask;
     public ClientActions ClientActions { get; }
     public ServerActions ServerActions { get; }
+    public Aisling? Aisling { get; set; }
+    public Direction ClientDirection { get; set; }
+    public Point ClientPoint { get; set; }
+    public Direction ServerDirection { get; set; }
+    public Point ServerPoint { get; set; }
 
     public delegate HandlerResult PacketHandler(in Packet packet, out IPacketSerializable serialized);
 
@@ -243,4 +252,27 @@ public sealed class Client
         ServerReceiveQueue.Enqueue(buffer);
         Signal.Pulse();
     }
+
+    #region IEquatable
+    /// <inheritdoc />
+    public bool Equals(Client? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Guid == other.Guid;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is Client other && Equals(other);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => Guid.GetHashCode();
+
+    public static bool operator ==(Client? left, Client? right) => Equals(left, right);
+    public static bool operator !=(Client? left, Client? right) => !Equals(left, right);
+    #endregion
 }
