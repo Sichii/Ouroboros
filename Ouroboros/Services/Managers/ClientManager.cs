@@ -14,18 +14,18 @@ public sealed class ClientManager : BackgroundService
 {
     private readonly Socket LobbyListener;
     private readonly ClientFactory ClientFactory;
-    private readonly ConcurrentDictionary<string, Client> Clients;
+    private readonly ConcurrentDictionary<string, Client.DarkAgesClient> Clients;
     private readonly ConcurrentDictionary<int, DaWindow> Windows;
 
     public ClientManager(ClientFactory clientFactory)
     {
         ClientFactory = clientFactory;
         LobbyListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        Clients = new ConcurrentDictionary<string, Client>();
+        Clients = new ConcurrentDictionary<string, Client.DarkAgesClient>();
         Windows = new ConcurrentDictionary<int, DaWindow>();
     }
     
-    public void AddClient(Client client)
+    public void AddClient(Client.DarkAgesClient client)
     {
         Clients.TryAdd(client.Guid, client);
 
@@ -33,7 +33,7 @@ public sealed class ClientManager : BackgroundService
         client.OnDisconnect += (_, _) => RemoveClient(client);
     }
     
-    public void RemoveClient(Client client) => Clients.TryRemove(client.Guid, out _);
+    public void RemoveClient(Client.DarkAgesClient client) => Clients.TryRemove(client.Guid, out _);
 
     public void AddWindow(DaWindow daWindow)
     {

@@ -13,7 +13,7 @@ public abstract class MapEntity : WorldEntity, IIdLocation
     public int Y { get; set; }
 
     /// <inheritdoc />
-    public ushort MapId => Map.Id;
+    public short MapId => Map.Id;
     public required Map Map { get; set; }
 
     /// <inheritdoc />

@@ -7,22 +7,22 @@ using Chaos.Packets.Abstractions.Definitions;
 using Ouroboros.Defintions;
 using Ouroboros.Utilities;
 
-namespace Ouroboros.Networking;
+namespace Ouroboros.Client;
 
 public sealed class ClientHandlers
 {
-    private readonly Client Client;
+    private readonly DarkAgesClient Client;
     private readonly IPacketSerializer PacketSerializer;
 
-    public ClientHandlers(Client client, IPacketSerializer packetSerializer)
+    public ClientHandlers(DarkAgesClient client, IPacketSerializer packetSerializer)
     {
         Client = client;
         PacketSerializer = packetSerializer;
     }
 
-    public Client.PacketHandler?[] GetIndexedHandlers()
+    public DarkAgesClient.PacketHandler?[] GetIndexedHandlers()
     {
-        var handlers = new Client.PacketHandler?[byte.MaxValue];
+        var handlers = new DarkAgesClient.PacketHandler?[byte.MaxValue];
         
         handlers[(byte)ClientOpCode.Version] = OnVersion;
         handlers[(byte)ClientOpCode.CreateCharInitial] = OnCreateCharInitial;

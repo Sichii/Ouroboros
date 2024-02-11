@@ -1,6 +1,7 @@
 ﻿using Chaos.Common.Definitions;
 using Chaos.Common.Synchronization;
 using Chaos.Extensions.Geometry;
+using Chaos.Networking.Entities.Server;
 using Ouroboros.Model;
 using Ouroboros.Networking;
 using CONSTANTS = Ouroboros.Defintions.CONSTANTS;
@@ -9,7 +10,7 @@ namespace Ouroboros.Services.Managers;
 
 public class EntityManager
 {
-    private readonly Client Client;
+    private readonly Client.DarkAgesClient DarkAgesClient;
     private readonly Dictionary<uint, VisibleEntity> Entities;
     private readonly HashSet<Door> Doors;
     private readonly HashSet<uint> NearbyAislingIds;
@@ -18,9 +19,9 @@ public class EntityManager
     private readonly HashSet<uint> NearbyMerchantIds;
     private readonly AutoReleasingMonitor Sync;
 
-    public EntityManager(Client client)
+    public EntityManager(Client.DarkAgesClient client)
     {
-        Client = client;
+        DarkAgesClient = client;
         Entities = new Dictionary<uint, VisibleEntity>();
         Doors = new HashSet<Door>();
         NearbyAislingIds = new HashSet<uint>();
@@ -112,7 +113,7 @@ public class EntityManager
         var ret = new List<Door>();
         
         foreach (var door in Doors)
-            if ((predicate?.Invoke(door) ?? true) && (Client.ServerPoint.DistanceFrom(door) <= CONSTANTS.DEFAULT_MAX_RANGE))
+            if ((predicate?.Invoke(door) ?? true) && (DarkAgesClient.ServerPoint.DistanceFrom(door) <= CONSTANTS.DEFAULT_MAX_RANGE))
                 ret.Add(door);
 
         return ret;
@@ -215,7 +216,7 @@ public class EntityManager
                         //if creature is dead, remove it
                         //if we're on an ao sith map and the creature goes out of range, remove it
                         if ((creature.HealthPercent == 0)
-                            || ((Client.ServerPoint.DistanceFrom(creature) > 10) && CONSTANTS.AO_SITH_MAPS.Contains(creature.Map.Name)))
+                            || ((DarkAgesClient.ServerPoint.DistanceFrom(creature) > 10) && CONSTANTS.AO_SITH_MAPS.Contains(creature.Map.Name)))
                             Entities.Remove(entity.Id);
                         
                         break;

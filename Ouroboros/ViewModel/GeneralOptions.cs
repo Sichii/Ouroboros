@@ -9,6 +9,7 @@ public sealed class GeneralOptions : NotifyPropertyChangedBase
     private WindowSize _windowSize = WindowSize.Small;
     private bool _injectDawnd;
     private bool _darkTheme = true;
+    private bool _logRawPackets = false;
 
     public string DarkAgesPath
     {
@@ -32,5 +33,11 @@ public sealed class GeneralOptions : NotifyPropertyChangedBase
     {
         get => _darkTheme;
         set => SetField(ref _darkTheme, value);
+    }
+    
+    public bool LogRawPackets
+    {
+        get => _logRawPackets;
+        set => SetField(ref _logRawPackets, value);
     }
 }

@@ -2,21 +2,25 @@
 using System.Net;
 using Chaos.Cryptography.Abstractions;
 using Chaos.Geometry;
-using Chaos.Geometry.Abstractions;
 using Chaos.Geometry.Abstractions.Definitions;
 using Chaos.Networking.Entities.Server;
 using Chaos.Packets;
 using Chaos.Packets.Abstractions;
+using Ouroboros.Abstractions;
 using Ouroboros.Memory;
 using Ouroboros.Model;
+using Ouroboros.Networking;
 using Ouroboros.Services.Managers;
+using Ouroboros.Services.Pathfinding;
 using Ouroboros.Utilities;
+using Ouroboros.ViewModel;
 
-namespace Ouroboros.Networking;
+namespace Ouroboros.Client;
 
-public sealed class Client : IEquatable<Client>
+public sealed class DarkAgesClient : IEquatable<DarkAgesClient>
 {
     public string Guid { get; } = System.Guid.NewGuid().ToString();
+    public uint? Id { get; set; }
     public DaWindow? DaWindow { get; set; }
     public event EventHandler? OnDisconnect;
     private readonly ConcurrentQueue<byte[]> ClientReceiveQueue;
@@ -30,6 +34,7 @@ public sealed class Client : IEquatable<Client>
     private readonly PacketHandler?[] ServerPacketHandlers;
     private readonly AsyncSignal Signal;
     private int NotifiedDisconnect;
+    public GeneralOptions GeneralOptions { get; }
     public ClientManager Manager { get; }
     public RedirectManager RedirectManager { get; }
     // ReSharper disable once NotAccessedField.Local
@@ -41,18 +46,26 @@ public sealed class Client : IEquatable<Client>
     public Point ClientPoint { get; set; }
     public Direction ServerDirection { get; set; }
     public Point ServerPoint { get; set; }
+    public EntityManager EntityManager { get; }
+    public Pathfinder? Pathfinder { get; set; }
+    public Routefinder Routefinder { get; set; }
+    public Dictionary<string, object> Temp { get; set; }
 
     public delegate HandlerResult PacketHandler(in Packet packet, out IPacketSerializable serialized);
 
-    public Client(
+    public DarkAgesClient(
         ProxyClient proxyClient,
         ProxyServer proxyServer,
         IPacketSerializer packetSerializer,
         RedirectManager redirectManager,
-        ClientManager manager)
+        ClientManager manager,
+        Routefinder routefinder,
+        IReadOnlyStorage<GeneralOptions> generalOptions)
     {
+        GeneralOptions = generalOptions.Value;
         ProxyClient = proxyClient;
         ProxyServer = proxyServer;
+        Routefinder = routefinder;
         PacketSerializer = packetSerializer;
         RedirectManager = redirectManager;
         Manager = manager;
@@ -67,10 +80,15 @@ public sealed class Client : IEquatable<Client>
         ClientPacketHandlers = new ClientHandlers(this, packetSerializer).GetIndexedHandlers();
         ServerPacketHandlers = new ServerHandlers(this, packetSerializer).GetIndexedHandlers();
         Signal = new AsyncSignal();
-        
-        ProxyClient.LogRawPackets = true;
-        ProxyServer.LogRawPackets = true;
-        
+        EntityManager = new EntityManager(this);
+        Temp = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        if (GeneralOptions.LogRawPackets)
+        {
+            ProxyClient.LogRawPackets = true;
+            ProxyServer.LogRawPackets = true;
+        }
+
         SetupDisconnectEvent();
     }
 
@@ -255,7 +273,7 @@ public sealed class Client : IEquatable<Client>
 
     #region IEquatable
     /// <inheritdoc />
-    public bool Equals(Client? other)
+    public bool Equals(DarkAgesClient? other)
     {
         if (ReferenceEquals(null, other))
             return false;
@@ -267,12 +285,12 @@ public sealed class Client : IEquatable<Client>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is Client other && Equals(other);
+    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is DarkAgesClient other && Equals(other);
 
     /// <inheritdoc />
     public override int GetHashCode() => Guid.GetHashCode();
 
-    public static bool operator ==(Client? left, Client? right) => Equals(left, right);
-    public static bool operator !=(Client? left, Client? right) => !Equals(left, right);
+    public static bool operator ==(DarkAgesClient? left, DarkAgesClient? right) => Equals(left, right);
+    public static bool operator !=(DarkAgesClient? left, DarkAgesClient? right) => !Equals(left, right);
     #endregion
 }

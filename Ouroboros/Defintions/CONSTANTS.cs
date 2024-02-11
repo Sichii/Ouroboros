@@ -1,5 +1,6 @@
 ﻿using System.Collections.Frozen;
 using System.Net;
+using Ouroboros.Data;
 using Ouroboros.Utilities;
 
 //[assembly:DisableRuntimeMarshalling]

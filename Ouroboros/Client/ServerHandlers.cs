@@ -1,27 +1,31 @@
-﻿using Chaos.Cryptography;
+﻿using System.IO;
+using Chaos.Common.Definitions;
+using Chaos.Cryptography;
 using Chaos.Networking.Entities.Server;
 using Chaos.Packets;
 using Chaos.Packets.Abstractions;
 using Chaos.Packets.Abstractions.Definitions;
-using Ouroboros.Defintions;
+using Ouroboros.Model;
+using Ouroboros.Services.Pathfinding;
 using Ouroboros.Utilities;
+using CONSTANTS = Ouroboros.Defintions.CONSTANTS;
 
-namespace Ouroboros.Networking;
+namespace Ouroboros.Client;
 
 public sealed class ServerHandlers
 {
-    private readonly Client Client;
+    private readonly DarkAgesClient Client;
     private readonly IPacketSerializer PacketSerializer;
 
-    public ServerHandlers(Client client, IPacketSerializer packetSerializer)
+    public ServerHandlers(DarkAgesClient client, IPacketSerializer packetSerializer)
     {
         Client = client;
         PacketSerializer = packetSerializer;
     }
 
-    public Client.PacketHandler?[] GetIndexedHandlers()
+    public DarkAgesClient.PacketHandler?[] GetIndexedHandlers()
     {
-        var handlers = new Client.PacketHandler?[byte.MaxValue];
+        var handlers = new DarkAgesClient.PacketHandler?[byte.MaxValue];
 
         handlers[(byte)ServerOpCode.ConnectionInfo] = OnConnectionInfo;
         handlers[(byte)ServerOpCode.LoginMessage] = OnLoginMessage;
@@ -146,6 +150,10 @@ public sealed class ServerHandlers
         var args = PacketSerializer.Deserialize<MapLoadCompleteArgs>(packet);
         serialized = args;
 
+        Guard.Unreachable(Client.Aisling?.Map == null, "MapLoadComplete received before map was loaded.");
+        
+        Client.Pathfinder = new Pathfinder(Client.Aisling.Map);
+
         return HandlerResult.Default;
     }
 
@@ -209,6 +217,10 @@ public sealed class ServerHandlers
     {
         var args = PacketSerializer.Deserialize<MapDataArgs>(packet);
         serialized = args;
+        
+        Guard.Unreachable(Client.Aisling?.Map == null, "MapData received before map was loaded.");
+        
+        Client.Aisling.Map.SetPartialData(args.CurrentYIndex, args.MapData);
 
         return HandlerResult.Default;
     }
@@ -273,6 +285,25 @@ public sealed class ServerHandlers
     {
         var args = PacketSerializer.Deserialize<DisplayAislingArgs>(packet);
         serialized = args;
+
+        Guard.Unreachable(!Client.Id.HasValue, "DisplayAisling received before client id was set.");
+
+        //var map = Client.Aisling?.Map ?? (Map)Client.Temp["InitialMap"];
+        
+        /*Client.EntityManager.Add();
+
+        var aisling = new Aisling(
+            args.Id,
+            map,
+            args.Sprite ?? 0,
+            args.X,
+            args.Y,
+            CreatureType.Aisling,
+            args.Direction,
+            args.Name);
+        
+        if(args.Id == Client.Id.Value)*/
+            
 
         return HandlerResult.Default;
     }
@@ -410,6 +441,33 @@ public sealed class ServerHandlers
         var args = PacketSerializer.Deserialize<MapInfoArgs>(packet);
         serialized = args;
 
+        Guard.Unreachable(Client.Aisling?.Map == null, "MapInfo received before map was loaded.");
+        
+        //if we are already on the map, dont do anything
+        if(Client.Aisling?.Map is not null && (Client.Aisling.MapId == args.MapId))
+            return HandlerResult.Default;
+
+        //create map
+        var map = new Map(
+            args.MapId,
+            args.Name,
+            args.Width,
+            args.Height,
+            (MapFlags)args.Flags);
+
+        //load map data from file
+        var path = Path.Combine(Client.GeneralOptions.DarkAgesPath, "maps", $"lod{args.MapId}.map");
+        var mapDataLoaded = map.TrySetData(path);
+
+        if (mapDataLoaded)
+            Client.Pathfinder = new Pathfinder(map);
+
+        //if aisling isnt created yet, add the map to client temp data
+        if (Client.Aisling is null)
+            Client.Temp["InitialMap"] = map;
+        else
+            Client.Aisling.Map = map;
+        
         return HandlerResult.Default;
     }
 

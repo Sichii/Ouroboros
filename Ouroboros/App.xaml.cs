@@ -6,16 +6,20 @@ using System.Text.Json.Serialization;
 using System.Windows;
 using Chaos.Extensions.Common;
 using Chaos.Extensions.DependencyInjection;
+using Chaos.Geometry.Abstractions;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ouroboros.Controls;
+using Ouroboros.Data.Meta;
 using Ouroboros.Extensions;
+using Ouroboros.Model;
 using Ouroboros.Networking;
 using Ouroboros.Services.Factories;
 using Ouroboros.Services.Managers;
+using Ouroboros.Services.Pathfinding;
 using Ouroboros.ViewModel;
 
 namespace Ouroboros;
@@ -80,16 +84,18 @@ public sealed partial class App
         
         services.AddCryptography();
         services.AddPacketSerializer();
-        services.AddPathfinding();
-        services.AddLocalStorageManager(cfg => cfg.WithSingleton<GeneralOptions>());
-
-        
+        services.AddLocalStorageManager(cfg =>
+        {
+            cfg.WithSingleton<GeneralOptions>();
+            cfg.WithSingleton<WorldMeta>();
+        });
         
         services.AddSingleton<RedirectManager>();
         
         services.AddTransient<ClientFactory>();
         services.AddTransient<DaWindowFactory>();
         services.AddTransient<OptionsWindow>();
+        services.AddTransient<Routefinder>();
         
         
         services.AddSimpleFactory<ProxyClient>(typeof(Socket));

@@ -17,7 +17,6 @@
     <ItemGroup>
       <PackageReference Include="Chaos.Extensions.Geometry" />
       <PackageReference Include="Chaos.Networking" />
-      <PackageReference Include="Chaos.Pathfinding" />
       <PackageReference Include="Chaos.Wpf" />
       <PackageReference Include="Material.Icons" />
       <PackageReference Include="MaterialDesignExtensions" />
